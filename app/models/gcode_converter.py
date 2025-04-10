@@ -1,12 +1,19 @@
-class GCodeConverter:
-    def __init__(self, model):
-        self.model = model
+from app.models.model3d import Model3D
+from pycam.Geometry import Toolpath
+from pycam.Toolpath import LinearToolpath
 
-    def convert(self):
-        # Example G-code generation logic
-        return [
-            "G21 ; Set units to millimeters",
-            "G90 ; Absolute positioning",
-            "G1 X10 Y10 Z-1 F100 ; Move to point",
-            "G1 X20 Y20 Z-1 F100 ; Move to another point"
-        ]
+class GCodeConverter:
+    def __init__(self, model: Model3D, toolpath: Toolpath):
+        self.model = model
+        self.toolpath = toolpath
+
+    def convert_to_gcode(self) -> str:
+        # Convert the toolpath to G-code format
+        gcode_lines = []
+        for segment in self.toolpath.segments:
+            if isinstance(segment, LinearToolpath):
+                gcode_lines.append(f"G1 X{segment.end.x} Y{segment.end.y} Z{segment.end.z}")
+            # Add more segment types as needed
+
+        # Combine the G-code lines into a single string
+        return "\n".join(gcode_lines)
